@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>React Sports Game</title>
+    </head>
+    <body>
+        <div id = "root"></div>
+        
+        <script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
+        <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+        <script crossorigin src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+        <script type = "text/babel">
+            //Team Component
+            class Teams extends React.Component {
+                constructor(props) {
+                    super(props)
+
+                    this.state = {
+                        name: this.props.name,
+                        logo: this.props.logo,
+                        shots: Number(this.props.shots),
+                        score: Number(this.props.score),
+                    }
+                }
+
+                handleShoot = (event) => {
+                    this.setState((state, props) => (
+                        {shots: state.shots + 1}
+                    ))
+                    
+                    if (Math.random() > 0.5) {
+                        this.setState((state, props) => (
+                            {score: state.score + 1}
+                        ))
+                    }
+                }
+
+                render() {
+
+                    return (
+                        <div>
+                            <h1>{this.props.name}</h1>
+                            <img src = {this.props.logo} alt = "logo"></img>
+                            <h4> Shots Taken: {this.state.shots} </h4>
+                            <h4> Shots Scored: {this.state.score} </h4>
+                            <button onClick = {this.handleShoot}> Take a Shot! </button>
+                        </div>
+                    )
+                }
+            }
+
+            function App (props) {
+                return (
+                <div>
+                    <h1>Welcome to the Sports Game!</h1>
+                    <div>
+                        <Teams name = "Sports Ballers" 
+                               logo = "./logo.jpg"  
+                               shots = {0} 
+                               score = {0}  />
+                    </div>
+                    <div>
+                        <Teams name = "Baller Sporters" 
+                               logo = "./logo2.jpg"  
+                               shots = {0} 
+                               score = {0}  />
+                    </div>
+                </div>
+                )
+            }
+
+            ReactDOM.render(
+                <App />,
+                document.getElementById('root')
+            )
+        </script>
+        
+    </body>
+</html>
