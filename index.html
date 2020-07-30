@@ -13,6 +13,10 @@
         <script crossorigin src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
 
         <script type = "text/babel">
+            //Audio Elements
+            let soundeffectShoot = new Audio('./Shoot.wav')
+            let soundeffectScore = new Audio('./Swish.wav')
+            
             //Team Component
             class Teams extends React.Component {
                 constructor(props) {
@@ -27,11 +31,14 @@
                 }
 
                 handleShoot = (event) => {
+                    soundeffectShoot.play();
+
                     this.setState((state, props) => (
                         {shots: state.shots + 1}
                     ))
                     
                     if (Math.random() > 0.5) {
+                        soundeffectScore.play()
                         this.setState((state, props) => (
                             {score: state.score + 1}
                         ))
@@ -39,6 +46,18 @@
                 }
 
                 render() {
+                    //This is the only stuff I stole from the D.Struss Videos. Pls forgive :c
+                    let shotPercentageDiv
+
+                    if (this.state.shots) {
+                        let shotPercentage = (Number(this.state.score) / Number(this.state.shots)).toFixed(2)
+                        shotPercentageDiv = (
+                            <div>
+                                <h4>Shooting Percentage: {shotPercentage} </h4>
+                            </div>
+                        )
+                    }
+                    //Stealing Ends Here
 
                     return (
                         <div>
@@ -47,31 +66,51 @@
                             <h4> Shots Taken: {this.state.shots} </h4>
                             <h4> Shots Scored: {this.state.score} </h4>
                             <button onClick = {this.handleShoot}> Take a Shot! </button>
+                            {shotPercentageDiv}
                         </div>
                     )
                 }
             }
 
+            //Game Component
+            class Game extends React.Component {
+                constructor (props) {
+                    super (props)
+
+                    this.state = {
+                        venue: this.props.venue
+                    }
+                }
+
+                render() {
+                    return (
+                        <div>
+                            <h1>Welcome to {this.state.venue}</h1>
+                            <div>
+                                <Teams name = "Sports Ballers" 
+                                    logo = "./logo.jpg"  
+                                    shots = {0} 
+                                    score = {0}  />
+                            </div>
+                            <div>
+                                <Teams name = "Baller Sporters" 
+                                    logo = "./logo2.jpg"  
+                                    shots = {0} 
+                                    score = {0}  />
+                            </div>
+                        </div>
+                    )
+                }
+            }
+
+            //App Wrapper
             function App (props) {
                 return (
-                <div>
-                    <h1>Welcome to the Sports Game!</h1>
-                    <div>
-                        <Teams name = "Sports Ballers" 
-                               logo = "./logo.jpg"  
-                               shots = {0} 
-                               score = {0}  />
-                    </div>
-                    <div>
-                        <Teams name = "Baller Sporters" 
-                               logo = "./logo2.jpg"  
-                               shots = {0} 
-                               score = {0}  />
-                    </div>
-                </div>
+                    <Game venue = "Acme Inc. Stadium" />
                 )
             }
 
+            //Render The App
             ReactDOM.render(
                 <App />,
                 document.getElementById('root')
