@@ -13,63 +13,33 @@
         <script crossorigin src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
 
         <script type = "text/babel">
-            //Audio Elements
-            let soundeffectShoot = new Audio('./Shoot.wav')
-            let soundeffectScore = new Audio('./Swish.wav')
+            
             
             //Team Component
-            class Teams extends React.Component {
-                constructor(props) {
-                    super(props)
+            function Team(props) {
+                //This is the only stuff I stole from the D.Struss Videos. Pls forgive :c
+                let shotPercentageDiv
 
-                    this.state = {
-                        name: this.props.name,
-                        logo: this.props.logo,
-                        shots: Number(this.props.shots),
-                        score: Number(this.props.score),
-                    }
-                }
-
-                handleShoot = (event) => {
-                    soundeffectShoot.play();
-
-                    this.setState((state, props) => (
-                        {shots: state.shots + 1}
-                    ))
-                    
-                    if (Math.random() > 0.5) {
-                        soundeffectScore.play()
-                        this.setState((state, props) => (
-                            {score: state.score + 1}
-                        ))
-                    }
-                }
-
-                render() {
-                    //This is the only stuff I stole from the D.Struss Videos. Pls forgive :c
-                    let shotPercentageDiv
-
-                    if (this.state.shots) {
-                        let shotPercentage = (Number(this.state.score) / Number(this.state.shots)).toFixed(2)
-                        shotPercentageDiv = (
-                            <div>
-                                <h4>Shooting Percentage: {shotPercentage} </h4>
-                            </div>
-                        )
-                    }
-                    //Stealing Ends Here
-
-                    return (
+                if (props.stats.shots) {
+                    let shotPercentage = (Number(props.stats.score) / Number(props.stats.shots)).toFixed(2)
+                    shotPercentageDiv = (
                         <div>
-                            <h1>{this.props.name}</h1>
-                            <img src = {this.props.logo} alt = "logo"></img>
-                            <h4> Shots Taken: {this.state.shots} </h4>
-                            <h4> Shots Scored: {this.state.score} </h4>
-                            <button onClick = {this.handleShoot}> Take a Shot! </button>
-                            {shotPercentageDiv}
+                            <h4>Shooting Percentage: {shotPercentage} </h4>
                         </div>
                     )
                 }
+                //Stealing Ends Here
+
+                return (
+                    <div>
+                        <h1>{props.name}</h1>
+                        <img src = {props.logo} alt = "logo"></img>
+                        <h4> Shots Taken: {props.stats.shots} </h4>
+                        <h4> Shots Scored: {props.stats.score} </h4>
+                        <button onClick = {props.shoot}> Take a Shot! </button>
+                        {shotPercentageDiv}
+                    </div>
+                )
             }
 
             //Game Component
@@ -78,25 +48,92 @@
                     super (props)
 
                     this.state = {
-                        venue: this.props.venue
+                        resetCount: 0,
+
+                        venue: this.props.venue,
+
+                        homeTeamStats : {
+                           shots: 0,
+                           score: 0,
+                        },
+
+                        awayTeamStats: {
+                            shots: 0,
+                            score: 0,
+                        },
                     }
+                }
+                
+                
+                handleShot = (team) => {
+                    //Audio Elements
+                    let soundeffectShoot = new Audio('./Shoot.wav')
+                    let soundeffectScore = new Audio('./Swish.wav')
+                    let teamKey = `${team}TeamStats`
+
+                    soundeffectShoot.play()
+                    
+                    this.state[teamKey].score
+                    if (Math.random() > 0.5) {
+                        soundeffectScore.play()
+                        this.setState((state,props) => ({
+                            [teamKey] : {
+                                score: state[teamKey].score + 1,
+                                shots: state[teamKey].shots + 1
+                            }   
+                        }))
+                    } else {
+                        this.setState((state,props) => ({
+                            [teamKey] : {
+                                score: state[teamKey].score,
+                                shots: state[teamKey].shots + 1
+                            }   
+                        }))
+                    }
+                }
+                    
+                handleReset = (event) => {
+                    this.setState((state,props) => ({
+                        resetCount: state.resetCount + 1,
+                        homeTeamStats: {
+                            shots: 0,
+                            score: 0
+                        },
+                        awayTeamStats: {
+                            shots: 0,
+                            score: 0
+                        },
+                    }))
                 }
 
                 render() {
                     return (
-                        <div>
-                            <h1>Welcome to {this.state.venue}</h1>
-                            <div>
-                                <Teams name = "Sports Ballers" 
-                                    logo = "./logo.jpg"  
-                                    shots = {0} 
-                                    score = {0}  />
+                        <div className = "Game">
+                            <div className = "venueDiv">
+                                <h1>Welcome to {this.state.venue}</h1>
                             </div>
-                            <div>
-                                <Teams name = "Baller Sporters" 
-                                    logo = "./logo2.jpg"  
-                                    shots = {0} 
-                                    score = {0}  />
+
+                            <div className = "homeTeamDiv">
+                                <Team 
+                                    name = {this.props.homeTeam}
+                                    logo = {this.props.homeTeamLogo}
+                                    stats = {this.state.homeTeamStats}
+                                    shoot = {() => this.handleShot('home')}
+                                />
+                            </div>
+
+                            <div className = "awayTeamDiv">
+                                <Team 
+                                    name = {this.props.awayTeam}
+                                    logo = {this.props.awayTeamLogo}
+                                    stats = {this.state.awayTeamStats}
+                                    shoot = {() => this.handleShot('away')}
+                                />
+                            </div>
+
+                            <div className = "Reset Button">
+                                <h4>Resets: {this.state.resetCount}</h4>
+                                <button onClick = {this.handleReset}>Reset Game</button>
                             </div>
                         </div>
                     )
@@ -106,7 +143,18 @@
             //App Wrapper
             function App (props) {
                 return (
-                    <Game venue = "Acme Inc. Stadium" />
+                    <Game venue = "Acme Inc. Stadium"
+                          
+                          homeTeam = "Sports Ballers"
+                          homeTeamLogo = "./logo.jpg"
+                          homeTeamShots = {0}
+                          homeTeamScore = {0}
+
+                          awayTeam = "Baller Sporters"
+                          awayTeamLogo = "./logo2.jpg"
+                          awayTeamShots = {0}
+                          awayTeamScore = {0}
+                    />
                 )
             }
 
