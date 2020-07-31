@@ -4,6 +4,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>React Sports Game</title>
+        <link rel="stylesheet" href="style.css">
     </head>
     <body>
         <div id = "root"></div>
@@ -38,6 +39,16 @@
                         <h4> Shots Scored: {props.stats.score} </h4>
                         <button onClick = {props.shoot}> Take a Shot! </button>
                         {shotPercentageDiv}
+                    </div>
+                )
+            }
+
+            //Scoreboard Component
+            function Scoreboard (props) {
+                return (
+                    <div>
+                        <h2>{props.homeName} Score: {props.homeScore}</h2> 
+                        <h2>{props.awayName} Score: {props.awayScore}</h2>
                     </div>
                 )
             }
@@ -113,6 +124,15 @@
                                 <h1>Welcome to {this.state.venue}</h1>
                             </div>
 
+                            <div className = "Scoreboard">
+                                <Scoreboard
+                                    homeName = {this.props.homeTeam}
+                                    homeScore = {this.state.homeTeamStats.score}
+                                    awayName = {this.props.awayTeam}
+                                    awayScore = {this.state.awayTeamStats.score}
+                                />
+                            </div>
+                            
                             <div className = "homeTeamDiv">
                                 <Team 
                                     name = {this.props.homeTeam}
@@ -131,6 +151,7 @@
                                 />
                             </div>
 
+
                             <div className = "Reset Button">
                                 <h4>Resets: {this.state.resetCount}</h4>
                                 <button onClick = {this.handleReset}>Reset Game</button>
@@ -147,13 +168,9 @@
                           
                           homeTeam = "Sports Ballers"
                           homeTeamLogo = "./logo.jpg"
-                          homeTeamShots = {0}
-                          homeTeamScore = {0}
 
                           awayTeam = "Baller Sporters"
                           awayTeamLogo = "./logo2.jpg"
-                          awayTeamShots = {0}
-                          awayTeamScore = {0}
                     />
                 )
             }
